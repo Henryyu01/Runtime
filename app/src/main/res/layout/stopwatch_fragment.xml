@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="stopwatchViewModel"
+            type="com.example.runtime.StopwatchViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,18 +32,28 @@
             android:layout_height="wrap_content"
             android:text="Start!"
             android:layout_margin="16dp"
-            app:layout_constraintEnd_toStartOf="@id/end"
+            app:layout_constraintEnd_toStartOf="@id/pause"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/stopwatch" />
 
         <Button
-            android:id="@+id/end"
+            android:id="@+id/pause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="End!"
+            android:text="Pause!"
+            android:layout_margin="16dp"
+            app:layout_constraintEnd_toEndOf="@id/stop"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@+id/stopwatch" />
+
+        <Button
+            android:id="@+id/stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stop!"
             android:layout_margin="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/start"
+            app:layout_constraintStart_toEndOf="@id/pause"
             app:layout_constraintTop_toBottomOf="@+id/stopwatch" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
