@@ -1,28 +1,27 @@
 package com.example.runtime
 
-import android.icu.util.TimeUnit
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.app.Application
+import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.google.android.gms.fitness.data.DataType
-import com.google.android.gms.fitness.request.DataReadRequest
-import java.time.LocalDateTime
-import java.time.ZoneId
-import kotlin.time.Duration.Companion.seconds
+import com.google.android.gms.fitness.request.OnDataPointListener
 
-class StopwatchViewModel: ViewModel() {
-    private val _steps = MutableLiveData<Int>()
+class StopwatchViewModel(application: Application) : AndroidViewModel(application) {
 
-    val steps: LiveData<Int>
-        get() = _steps
+    private val LOG_TAG = "StopwatchViewModel"
 
-    fun getData() {
+    private var _cadence = MutableLiveData<Int>(0)
 
+    val listener = OnDataPointListener { dataPoint ->
+        for (field in dataPoint.dataType.fields) {
+            val value = dataPoint.getValue(field)
+            Log.i(LOG_TAG, "Datapoint field: ${field.name}, value: $value")
+            _cadence.value = value.asInt()
+        }
     }
 
-    fun accessGoogleFit() {
+    val cadence: LiveData<Int>
+        get() = _cadence
 
-    }
 }

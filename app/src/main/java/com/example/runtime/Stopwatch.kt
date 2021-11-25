@@ -1,18 +1,32 @@
 package com.example.runtime
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.nfc.Tag
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
+import android.util.Log
 import android.widget.Chronometer
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.example.runtime.databinding.ActivityStopwatchBinding
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptionsExtension
+import com.google.android.gms.fitness.Fitness
+import com.google.android.gms.fitness.FitnessOptions
+import com.google.android.gms.fitness.data.DataType
+import com.google.android.gms.fitness.request.OnDataPointListener
+import com.google.android.gms.fitness.request.SensorRequest
+import java.util.concurrent.TimeUnit
 
 class Stopwatch : AppCompatActivity() {
+
+    private var LOG_TAG = "Stopwatch"
 
     // Chronometer vars
     private var running = false
@@ -27,24 +41,19 @@ class Stopwatch : AppCompatActivity() {
     // View Model
     private val viewModel: StopwatchViewModel by viewModels()
 
-    // Register the permissions callback, which handles the user's response to the
-    // system permissions dialog. Save the return value, an instance of
-    // ActivityResultLauncher. You can use either a val, as shown in this snippet,
-    // or a lateinit var in your onAttach() or onCreate() method.
-    val requestPermissionLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
-            if (isGranted) {
-                viewModel.getData()
-            } else {
-                // Explain to the user that the feature is unavailable because the
-                // features requires a permission that the user has denied. At the
-                // same time, respect the user's decision. Don't link to system
-                // settings in an effort to convince the user to change their
-                // decision.
-            }
-        }
+    // Fitness API
+
+    private val fitnessOptions: GoogleSignInOptionsExtension = FitnessOptions.builder()
+        .addDataType(DataType.TYPE_STEP_COUNT_CADENCE, FitnessOptions.ACCESS_READ)
+        .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+        .build()
+
+    private lateinit var account: GoogleSignInAccount
+
+    private val request = SensorRequest.Builder()
+        .setDataType(DataType.TYPE_STEP_COUNT_CADENCE)
+        .setSamplingRate(5, TimeUnit.SECONDS)
+        .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,18 +71,33 @@ class Stopwatch : AppCompatActivity() {
         binding.pause.setOnClickListener { onTimePause() }
 
         // Setup observers to livedata
-        val stepObserver = Observer<Int> { steps ->
-            binding.steps.text = steps.toString()
+        val stepObserver = Observer<Int> { cadence ->
+            binding.cadence.text = cadence.toString()
         }
-        viewModel.steps.observe(this, stepObserver)
+        viewModel.cadence.observe(this, stepObserver)
+
+        // Initialize Fitness API
+        account = GoogleSignIn.getAccountForExtension(this, fitnessOptions)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Fitness.getSensorsClient(this, GoogleSignIn.getAccountForExtension(this, fitnessOptions))
+            .remove(viewModel.listener)
+            .addOnSuccessListener {
+                Log.i(LOG_TAG, "Listener removed")
+            }
+            .addOnFailureListener {
+                Log.i(LOG_TAG, "Listener removal failed")
+            }
     }
 
     private fun onTimeStart() {
         if (!running) {
-            checkPermission()
             chronometer.base = SystemClock.elapsedRealtime() - timeOffset
             chronometer.start()
             running = true
+            createFitnessClient()
         }
     }
 
@@ -94,21 +118,14 @@ class Stopwatch : AppCompatActivity() {
         running = false
     }
 
-    private fun checkPermission() {
-        when {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
-                    == PackageManager.PERMISSION_GRANTED -> {
-                viewModel.getData()
+    private fun createFitnessClient() {
+        val response = Fitness.getSensorsClient(this, account)
+            .add(request, viewModel.listener)
+            .addOnSuccessListener {
+                Log.i(LOG_TAG, "Listener successful")
             }
-
-            shouldShowRequestPermissionRationale(Manifest.permission.ACTIVITY_RECOGNITION) -> {
-
+            .addOnFailureListener {
+                Log.i(LOG_TAG, "Listener failed")
             }
-
-            else -> {
-                requestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
-            }
-
-        }
     }
 }
