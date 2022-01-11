@@ -1,17 +1,11 @@
 package com.example.runtime
 
-import android.Manifest
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.nfc.Tag
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.Log
 import android.widget.Chronometer
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.example.runtime.databinding.ActivityStopwatchBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -20,7 +14,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptionsExtension
 import com.google.android.gms.fitness.Fitness
 import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataType
-import com.google.android.gms.fitness.request.OnDataPointListener
 import com.google.android.gms.fitness.request.SensorRequest
 import java.util.concurrent.TimeUnit
 
@@ -50,9 +43,14 @@ class Stopwatch : AppCompatActivity() {
 
     private lateinit var account: GoogleSignInAccount
 
-    private val request = SensorRequest.Builder()
+    private val cadenceRequest = SensorRequest.Builder()
         .setDataType(DataType.TYPE_STEP_COUNT_CADENCE)
         .setSamplingRate(5, TimeUnit.SECONDS)
+        .build()
+
+    private val stepRequest = SensorRequest.Builder()
+        .setDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE)
+        .setSamplingRate(1, TimeUnit.SECONDS)
         .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,10 +69,15 @@ class Stopwatch : AppCompatActivity() {
         binding.pause.setOnClickListener { onTimePause() }
 
         // Setup observers to livedata
-        val stepObserver = Observer<Int> { cadence ->
+        val stepObserver = Observer<Int> { steps ->
+            binding.steps.text = steps.toString()
+        }
+
+        val cadenceObserver = Observer<Int> { cadence ->
             binding.cadence.text = cadence.toString()
         }
-        viewModel.cadence.observe(this, stepObserver)
+        viewModel.steps.observe(this, stepObserver)
+        viewModel.cadence.observe(this, cadenceObserver)
 
         // Initialize Fitness API
         account = GoogleSignIn.getAccountForExtension(this, fitnessOptions)
@@ -83,12 +86,20 @@ class Stopwatch : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         Fitness.getSensorsClient(this, GoogleSignIn.getAccountForExtension(this, fitnessOptions))
-            .remove(viewModel.listener)
+            .remove(viewModel.stepListener)
             .addOnSuccessListener {
-                Log.i(LOG_TAG, "Listener removed")
+                Log.i(LOG_TAG, "Step Listener removed")
             }
             .addOnFailureListener {
-                Log.i(LOG_TAG, "Listener removal failed")
+                Log.i(LOG_TAG, "Step Listener removal failed")
+            }
+        Fitness.getSensorsClient(this, GoogleSignIn.getAccountForExtension(this, fitnessOptions))
+            .remove(viewModel.cadenceListener)
+            .addOnSuccessListener {
+                Log.i(LOG_TAG, "Cadence Listener removed")
+            }
+            .addOnFailureListener {
+                Log.i(LOG_TAG, "Cadence Listener removal failed")
             }
     }
 
@@ -119,8 +130,17 @@ class Stopwatch : AppCompatActivity() {
     }
 
     private fun createFitnessClient() {
-        val response = Fitness.getSensorsClient(this, account)
-            .add(request, viewModel.listener)
+        val cadenceResponse = Fitness.getSensorsClient(this, account)
+            .add(cadenceRequest, viewModel.cadenceListener)
+            .addOnSuccessListener {
+                Log.i(LOG_TAG, "Listener successful")
+            }
+            .addOnFailureListener {
+                Log.i(LOG_TAG, "Listener failed")
+            }
+
+        val stepResponse = Fitness.getSensorsClient(this, account)
+            .add(stepRequest, viewModel.stepListener)
             .addOnSuccessListener {
                 Log.i(LOG_TAG, "Listener successful")
             }

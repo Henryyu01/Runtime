@@ -49,7 +49,7 @@
         app:layout_constraintTop_toBottomOf="@+id/stopwatch" />
 
     <TextView
-        android:id="@+id/cadence"
+        android:id="@+id/steps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/steps"
@@ -58,4 +58,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pause"
         app:layout_constraintVertical_bias="0.1" />
+
+    <TextView
+        android:id="@+id/cadence"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cadence"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/steps"
+        app:layout_constraintVertical_bias="0.1"/>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
