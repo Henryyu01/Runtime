@@ -76,6 +76,7 @@ class StartFragment : Fragment() {
 
             override fun onFailure(throwable: Throwable) {
                 Log.e(LOG_TAG, throwable.message, throwable)
+                Log.d(LOG_TAG, "Spotify failed to connect :/")
                 // Something went wrong when attempting to connect! Handle errors here
             }
         })
@@ -94,7 +95,7 @@ class StartFragment : Fragment() {
     private fun checkOAuthPermissions() {
         val fitnessOptions = FitnessOptions.builder()
             .addDataType(DataType.TYPE_STEP_COUNT_CADENCE, FitnessOptions.ACCESS_READ)
-            .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+            .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE, FitnessOptions.ACCESS_READ)
             .build()
 
         val account = GoogleSignIn.getAccountForExtension(fragmentContext, fitnessOptions)

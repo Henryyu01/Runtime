@@ -13,7 +13,15 @@ class StopwatchViewModel(application: Application) : AndroidViewModel(applicatio
 
     private var _cadence = MutableLiveData<Int>(0)
 
-    val listener = OnDataPointListener { dataPoint ->
+    val cadence: LiveData<Int>
+        get() = _cadence
+
+    private var _steps = MutableLiveData<Int>(0)
+
+    val steps: LiveData<Int>
+        get() = _steps
+
+    val cadenceListener = OnDataPointListener { dataPoint ->
         for (field in dataPoint.dataType.fields) {
             val value = dataPoint.getValue(field)
             Log.i(LOG_TAG, "Datapoint field: ${field.name}, value: $value")
@@ -21,7 +29,10 @@ class StopwatchViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    val cadence: LiveData<Int>
-        get() = _cadence
-
+    val stepListener = OnDataPointListener { dataPoint ->
+        for (field in dataPoint.dataType.fields) {
+            val value = dataPoint.getValue(field)
+            _steps.value = value.asInt()
+        }
+    }
 }

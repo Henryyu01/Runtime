@@ -4,4 +4,5 @@
     <string name="pause">Pause!</string>
     <string name="stop">Stop!</string>
     <string name="steps">Steps: %d</string>
+    <string name="cadence">Cadence: %d</string>
 </resources>

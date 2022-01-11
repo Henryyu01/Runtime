@@ -3,6 +3,7 @@
     package="com.example.runtime">
 
     <uses-permission android:name="android.gms.permission.ACTIVITY_RECOGNITION"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
