@@ -1,4 +1,9 @@
 <resources>
+    <!-- Navigation -->
+    <string name="nav_history">History</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_player">Player</string>
+
     <string name="app_name">Runtime</string>
     <string name="start">Start!</string>
     <string name="pause">Pause!</string>
