@@ -1,5 +1,6 @@
 package com.example.runtime
 
+/**
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
@@ -148,4 +149,4 @@ class Stopwatch : AppCompatActivity() {
                 Log.i(LOG_TAG, "Listener failed")
             }
     }
-}
+}**/

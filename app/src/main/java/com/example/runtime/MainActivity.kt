@@ -1,38 +1,177 @@
 package com.example.runtime
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager2.widget.ViewPager2
-import com.example.runtime.databinding.ActivityMainBinding
-import com.example.runtime.main.FragmentAdapter
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
+import androidx.core.content.ContextCompat
+import com.example.runtime.screens.MainScreen
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.fitness.FitnessOptions
+import com.google.android.gms.fitness.data.DataType
+import com.spotify.android.appremote.api.ConnectionParams
+import com.spotify.android.appremote.api.Connector
+import com.spotify.android.appremote.api.SpotifyAppRemote
 
-private const val LOG_TAG = "MainActivity"
+class MainActivity : ComponentActivity() {
 
-class MainActivity : AppCompatActivity() {
+    // Permissions
+    private var runtimePermissions = false
+    private var oAuthPermissions = false
+    private var apiLevel = android.os.Build.VERSION.SDK_INT
 
-    // Tab layout + view pager
-    private var tabNames = arrayOf("Run", "Play", "Sessions")
-    private lateinit var viewPager: ViewPager2
-    private lateinit var tabLayout: TabLayout
-    private lateinit var adapter: FragmentAdapter
+    // Spotify
+    private val clientId = "f09638f3c5fa4d0d9c95ae4ac609ee67"
+    private val redirectUri = "http://localhost:8888/callback"
+    private var spotifyAppRemote: SpotifyAppRemote? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContent {
+            MainScreen()
+        }
+    }
 
-        val binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onStart() {
+        super.onStart()
+        initializeSpotify()
+    }
 
-        viewPager = binding.pager
-        tabLayout = binding.tabLayout
-        adapter = FragmentAdapter(supportFragmentManager, lifecycle)
+    private fun initializeSpotify() {
+        // Set the connection parameters
+        val connectionParams = ConnectionParams.Builder(clientId)
+            .setRedirectUri(redirectUri)
+            .showAuthView(true)
+            .build()
 
-        viewPager.adapter = adapter
+        SpotifyAppRemote.connect(
+            applicationContext,
+            connectionParams,
+            object : Connector.ConnectionListener {
 
-        TabLayoutMediator(tabLayout, viewPager) {
-                tab, position -> tab.text = tabNames[position]
-        }.attach()
+                override fun onConnected(appRemote: SpotifyAppRemote) {
+                    spotifyAppRemote = appRemote
+                    Log.d(TAG, "Connected! Yay!")
+                    connected()
+                }
+
+                override fun onFailure(throwable: Throwable) {
+                    Log.e(TAG, throwable.message, throwable)
+                    Log.d(TAG, "Spotify failed to connect :/")
+                }
+            }
+        )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        spotifyAppRemote?.let {
+            SpotifyAppRemote.disconnect(it)
+        }
+    }
+
+    // Check that the user's google account has given permission
+    //  If not, request the permissions
+    //  Otherwise, launch the stopwatch activity
+    private fun checkOAuthPermissions() {
+        val fitnessOptions = FitnessOptions.builder()
+            .addDataType(DataType.TYPE_STEP_COUNT_CADENCE, FitnessOptions.ACCESS_READ)
+            .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE, FitnessOptions.ACCESS_READ)
+            .build()
+
+        val account = GoogleSignIn.getAccountForExtension(applicationContext, fitnessOptions)
+
+        if (!GoogleSignIn.hasPermissions(account, fitnessOptions)) {
+            GoogleSignIn.requestPermissions(
+                this,
+                Companion.PERMISSIONS_REQUEST_CODE,
+                account,
+                fitnessOptions)
+        } else {
+            oAuthPermissions = true
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == AppCompatActivity.RESULT_OK && requestCode == Companion.PERMISSIONS_REQUEST_CODE) {
+            oAuthPermissions = true
+        } else {
+            // Show permission requirement dialogue
+        }
+    }
+
+    // Check that runtime permissions have been given
+    private fun checkRuntimePermissions() {
+        Log.i(TAG, apiLevel.toString())
+
+        // Android automatically gives activity_recognition permissions below Android API 29
+        if (apiLevel > 28) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    applicationContext, Manifest.permission.ACTIVITY_RECOGNITION)
+                        == PackageManager.PERMISSION_GRANTED -> {
+                    runtimePermissions = true
+                }
+
+                shouldShowRequestPermissionRationale(Manifest.permission.ACTIVITY_RECOGNITION) -> {
+                    Log.i(TAG, "test!")
+                    // Show permission requirement dialogue
+                }
+
+                else -> {
+                    Log.i(TAG, "requesting permissions!")
+                    requestPermissions(
+                        arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
+                        Companion.PERMISSIONS_REQUEST_CODE
+                    )
+                }
+            }
+        } else {
+            runtimePermissions = true
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            Companion.PERMISSIONS_REQUEST_CODE -> {
+                // Request granted, check for empty return
+                if ((grantResults.isNotEmpty() &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    runtimePermissions = true
+                } else {
+                    Log.i(TAG, "permission refused")
+                    // Explain to the user that the feature is unavailable because the
+                    // features requires a permission that the user has denied. At the
+                    // same time, respect the user's decision. Don't link to system
+                    // settings in an effort to convince the user to change their
+                    // decision.
+                }
+                return
+            }
+
+            else -> {
+                Log.i(TAG, "unknown request code")
+            }
+        }
+    }
+
+    private fun connected() {
+
+    }
+
+    companion object {
+        private val TAG = MainActivity::class.simpleName
+        private const val PERMISSIONS_REQUEST_CODE = 55
     }
 
 }

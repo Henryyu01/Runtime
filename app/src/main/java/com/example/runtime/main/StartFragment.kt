@@ -4,16 +4,10 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.example.runtime.Stopwatch
-import com.example.runtime.databinding.FragmentStartBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataType
@@ -34,28 +28,10 @@ class StartFragment : Fragment() {
     private var oAuthPermissions = false
     private var apiLevel = android.os.Build.VERSION.SDK_INT
 
-    // Binding
-    private var _binding: FragmentStartBinding? = null
-    private val binding get() = _binding!!
-
     // Spotify
     private val clientId = "f09638f3c5fa4d0d9c95ae4ac609ee67"
     private val redirectUri = "http://localhost:8888/callback"
     private var spotifyAppRemote: SpotifyAppRemote? = null
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        fragmentContext = activity!!
-        // Inflate the layout for this fragment
-        _binding = FragmentStartBinding.inflate(inflater, container, false)
-        val button = binding.startButton
-        button.setOnClickListener {
-            startStopwatch()
-        }
-        return binding.root
-    }
 
     override fun onStart() {
         super.onStart()
@@ -177,20 +153,6 @@ class StartFragment : Fragment() {
             else -> {
                 Log.i(LOG_TAG, "unknown request code")
             }
-        }
-    }
-
-    private fun startStopwatch() {
-        checkOAuthPermissions()
-        checkRuntimePermissions()
-
-        Log.i(LOG_TAG, "runtime permissions: $runtimePermissions")
-        Log.i(LOG_TAG, "oauth permissions: $oAuthPermissions")
-        val intent = Intent(fragmentContext, Stopwatch::class.java)
-        if (runtimePermissions && oAuthPermissions) {
-            startActivity(intent)
-        } else {
-            // Display dialogue on permission requirement
         }
     }
 
