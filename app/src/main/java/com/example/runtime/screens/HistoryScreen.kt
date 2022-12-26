@@ -1,13 +1,21 @@
 package com.example.runtime.screens
 
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.*
+import com.example.runtime.HistoryViewModel
+import com.example.runtime.ui.HistoryElement
 
-@Preview
 @Composable
-fun HistoryScreen() {
-    Text(
-        text = "History"
-    )
+fun HistoryScreen(viewModel: HistoryViewModel) {
+    HistoryList(viewModel)
+}
+
+@Composable
+fun HistoryList(viewModel: HistoryViewModel) {
+    LazyColumn() {
+        items(items = viewModel.getHistories()) { item ->
+            HistoryElement(item)
+        }
+    }
 }
