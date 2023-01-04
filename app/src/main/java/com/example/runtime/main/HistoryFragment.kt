@@ -7,9 +7,4 @@ import com.example.runtime.repositories.HistoryRepository
 
 class HistoryFragment : Fragment() {
 
-    private val historyRepository = HistoryRepository()
-    private val historyViewModel: HistoryViewModel by viewModels()
-
-
-
 }

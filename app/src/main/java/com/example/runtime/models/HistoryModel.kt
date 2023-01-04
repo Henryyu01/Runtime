@@ -5,9 +5,10 @@ import java.time.Duration
 import java.util.*
 
 data class HistoryModel (
+    val id: Int,
     val date: Date,
     val distance: Double,
-    val length: Duration,
+    val duration: Duration,
     val name: String,
     val steps: Int,
 )

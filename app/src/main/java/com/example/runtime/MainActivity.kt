@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
             .build()
 
         SpotifyAppRemote.connect(
-            applicationContext,
+            this,
             connectionParams,
             object : Connector.ConnectionListener {
 
@@ -96,6 +96,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == AppCompatActivity.RESULT_OK && requestCode == Companion.PERMISSIONS_REQUEST_CODE) {
@@ -104,6 +105,7 @@ class MainActivity : ComponentActivity() {
             // Show permission requirement dialogue
         }
     }
+    **/
 
     // Check that runtime permissions have been given
     private fun checkRuntimePermissions() {
