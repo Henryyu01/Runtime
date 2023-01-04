@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.runtime.ui.circleButton
+import com.example.runtime.ui.CircleButton
 
 @Composable
 fun PlayerScreen() {
@@ -18,8 +18,8 @@ fun PlayerScreen() {
             .padding(16.dp)
             .fillMaxWidth()
     ) {
-        circleButton(onClick = { /*TODO*/ }, icon = Icons.Filled.SkipNext, description = "Play}")
-        circleButton(onClick = { /*TODO*/ }, icon = Icons.Filled.PlayArrow, description = "Next")
-        circleButton(onClick = { /*TODO*/ }, icon = Icons.Filled.SkipPrevious, description = "play")
+        CircleButton(onClick = { /*TODO*/ }, icon = Icons.Filled.SkipNext, description = "Play}")
+        CircleButton(onClick = { /*TODO*/ }, icon = Icons.Filled.PlayArrow, description = "Next")
+        CircleButton(onClick = { /*TODO*/ }, icon = Icons.Filled.SkipPrevious, description = "play")
     }
 }
