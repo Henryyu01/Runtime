@@ -1,4 +1,4 @@
-package com.example.runtime.screens
+package com.example.runtime.ui.main
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -12,11 +12,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.runtime.navigation.BottomBarScreen
+import com.example.runtime.ui.player.PlayerScreen
+import com.example.runtime.ui.history.HistoryScreen
+import com.example.runtime.ui.home.HomeScreen
+import com.example.runtime.ui.navigation.BottomBarScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(onSpotifyAuthentication: () -> Unit) {
     val navController = rememberNavController()
     Scaffold(
        bottomBar = { BottomBar(navController) }
@@ -26,7 +29,7 @@ fun MainScreen() {
             startDestination = BottomBarScreen.Home.route,
             Modifier.padding(innerPadding)
         ) {
-            composable("home") { HomeScreen() }
+            composable("home") { HomeScreen(onSpotifyAuthentication, listOf()) }
             composable("history") { HistoryScreen() }
             composable("player") { PlayerScreen() }
         }

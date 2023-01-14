@@ -1,6 +1,6 @@
-package com.example.runtime.repositories
+package com.example.runtime.data.repositories
 
-import com.example.runtime.models.HistoryModel
+import com.example.runtime.data.models.HistoryModel
 import java.time.Duration
 import java.util.*
 

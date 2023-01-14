@@ -1,12 +1,10 @@
-package com.example.runtime.screens
+package com.example.runtime.ui.history
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.runtime.ExpandableHistoryModel
-import com.example.runtime.HistoryViewModel
-import com.example.runtime.ui.HistoryCard
+import com.example.runtime.ui.components.HistoryCard
 
 @Composable
 fun HistoryScreen(historyViewModel: HistoryViewModel = viewModel()) {

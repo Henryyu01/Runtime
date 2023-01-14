@@ -1,4 +1,4 @@
-package com.example.runtime.screens
+package com.example.runtime.ui.player
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.runtime.ui.CircleButton
+import com.example.runtime.ui.components.CircleButton
 
 @Composable
 fun PlayerScreen() {

@@ -1,20 +1,12 @@
-package com.example.runtime
+package com.example.runtime.ui.history
 
 import android.util.Log
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.runtime.models.HistoryModel
-import com.example.runtime.repositories.HistoryRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.example.runtime.data.models.HistoryModel
+import com.example.runtime.data.repositories.HistoryRepository
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.util.*
 
@@ -37,13 +29,9 @@ class HistoryViewModel: ViewModel() {
 
     fun expandCard(id: Int) {
         Log.d(logTag, "Card $id expanded")
-        _histories.forEachIndexed { index, expandableHistoryModel ->
-            if (expandableHistoryModel.id == id) {
-                _histories[index] = _histories[index].copy(
-                    isExpanded = !_histories[index].isExpanded
-                )
-            }
-        }
+        val index = _histories.withIndex().find { it.value.id == id }?.index ?: return
+        val historyModel = _histories[index]
+        _histories[index] = historyModel.copy(isExpanded = !historyModel.isExpanded)
     }
 
     fun deleteHistory() {

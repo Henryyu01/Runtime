@@ -1,21 +1,23 @@
-package com.example.runtime
+package com.example.runtime.ui
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.example.runtime.screens.MainScreen
+import androidx.lifecycle.lifecycleScope
+import com.adamratzman.spotify.auth.pkce.startSpotifyClientPkceLoginActivity
+import com.example.runtime.SpotifyLoginActivity
+import com.example.runtime.ui.main.MainScreen
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataType
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -32,16 +34,26 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainScreen()
+            MainScreen(
+                onSpotifyAuthentication = {
+                    initializeSpotify()
+                }
+            )
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        initializeSpotify()
+    private fun initializeSpotify() {
+        lifecycleScope.launch {
+            connectToSpotifyAndroidAPI()
+            connectToSpotifyWebAPI()
+        }
     }
 
-    private fun initializeSpotify() {
+    private fun connectToSpotifyWebAPI() {
+        startSpotifyClientPkceLoginActivity(SpotifyLoginActivity::class.java)
+    }
+
+    private fun connectToSpotifyAndroidAPI() {
         // Set the connection parameters
         val connectionParams = ConnectionParams.Builder(clientId)
             .setRedirectUri(redirectUri)
@@ -56,7 +68,6 @@ class MainActivity : ComponentActivity() {
                 override fun onConnected(appRemote: SpotifyAppRemote) {
                     spotifyAppRemote = appRemote
                     Log.d(TAG, "Connected! Yay!")
-                    connected()
                 }
 
                 override fun onFailure(throwable: Throwable) {
@@ -88,7 +99,7 @@ class MainActivity : ComponentActivity() {
         if (!GoogleSignIn.hasPermissions(account, fitnessOptions)) {
             GoogleSignIn.requestPermissions(
                 this,
-                Companion.PERMISSIONS_REQUEST_CODE,
+                PERMISSIONS_REQUEST_CODE,
                 account,
                 fitnessOptions)
         } else {
@@ -129,7 +140,7 @@ class MainActivity : ComponentActivity() {
                     Log.i(TAG, "requesting permissions!")
                     requestPermissions(
                         arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
-                        Companion.PERMISSIONS_REQUEST_CODE
+                        PERMISSIONS_REQUEST_CODE
                     )
                 }
             }
@@ -138,6 +149,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -166,10 +178,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-    private fun connected() {
-
-    }
+    */
 
     companion object {
         private val TAG = MainActivity::class.simpleName

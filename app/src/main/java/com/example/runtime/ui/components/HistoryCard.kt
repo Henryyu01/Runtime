@@ -1,8 +1,6 @@
-package com.example.runtime.ui
+package com.example.runtime.ui.components
 
 import androidx.compose.animation.*
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -12,14 +10,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.runtime.ExpandableHistoryModel
-import com.example.runtime.models.HistoryModel
+import com.example.runtime.ui.history.ExpandableHistoryModel
 
 @Composable
 fun HistoryCard(

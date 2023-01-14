@@ -1,4 +1,4 @@
-package com.example.runtime.navigation
+package com.example.runtime.ui.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
