@@ -11,4 +11,8 @@
     <string name="steps">Steps: %d</string>
     <string name="cadence">Cadence: %d</string>
     <string name="title_activity_history_screen">HistoryScreen</string>
+
+    <!-- Labels -->
+    <string name="spotify_login_callback">SpotifyLoginCallback</string>
+    <string name="spotify_login_activity">SpotifyLoginActivity</string>
 </resources>

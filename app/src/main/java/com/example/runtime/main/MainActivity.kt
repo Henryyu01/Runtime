@@ -1,4 +1,4 @@
-package com.example.runtime.ui
+package com.example.runtime.main
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             MainScreen(
                 onSpotifyAuthentication = {

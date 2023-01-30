@@ -7,7 +7,7 @@ import com.adamratzman.spotify.SpotifyClientApi
 import com.adamratzman.spotify.SpotifyScope
 import com.adamratzman.spotify.auth.SpotifyDefaultCredentialStore
 import com.adamratzman.spotify.auth.pkce.AbstractSpotifyPkceLoginActivity
-import com.example.runtime.ui.MainActivity
+import com.example.runtime.main.MainActivity
 
 internal var pkceClassBackTo: Class<out Activity>? = null
 
@@ -44,8 +44,4 @@ class SpotifyLoginActivity() : AbstractSpotifyPkceLoginActivity() {
         Log.d("SPOTIFY", "Auth succeeded")
         startActivity(Intent(this, classBackTo))
     }
-}
-
-interface SpotifyWebAPI {
-
 }
