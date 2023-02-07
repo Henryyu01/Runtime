@@ -21,7 +21,7 @@ fun HomeScreen(
         verticalAlignment = Alignment.CenterVertically
     ) {
         val modifier = Modifier.padding(8.dp).weight(0.5f)
-        if (homeViewModel.isAuthenticated) {
+        if (!homeViewModel.isAuthenticated) {
             SimpleButton(
                 onClick = onSpotifyAuthentication,
                 text = "Spotify Web Authentication",

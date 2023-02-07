@@ -11,9 +11,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.util.*
+import javax.inject.Inject
 
 @HiltViewModel
-class HistoryViewModel: ViewModel() {
+class HistoryViewModel @Inject constructor(): ViewModel() {
 
     private val historyRepository = HistoryRepository()
 

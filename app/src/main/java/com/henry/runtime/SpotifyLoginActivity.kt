@@ -17,7 +17,7 @@ internal var pkceClassBackTo: Class<out Activity>? = null
 class SpotifyLoginActivity @Inject constructor() : AbstractSpotifyPkceLoginActivity() {
 
     @Inject
-    private lateinit var spotifyAuthSource: SpotifyAuthSource
+    lateinit var spotifyAuthSource: SpotifyAuthSource
 
     override val clientId = BuildConfig.SPOTIFY_CLIENT_ID
     override val redirectUri = BuildConfig.SPOTIFY_REDIRECT_URI

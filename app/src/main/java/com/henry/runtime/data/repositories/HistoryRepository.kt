@@ -1,9 +1,14 @@
 package com.henry.runtime.data.repositories
 
 import com.henry.runtime.data.models.HistoryModel
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import java.time.Duration
 import java.util.*
 
+@Module
+@InstallIn(SingletonComponent::class)
 class HistoryRepository {
 
     private val histories: MutableList<HistoryModel> = mutableListOf()

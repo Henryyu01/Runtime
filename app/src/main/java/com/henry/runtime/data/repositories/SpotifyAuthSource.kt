@@ -12,12 +12,14 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class SpotifyAuthSource @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
+class SpotifyAuthSource @Inject constructor() {
 
-    @Singleton
+    @ApplicationContext
+    @Inject
+    lateinit var context: Context
+
     @Provides
+    @Singleton
     fun credentialStore() = SpotifyDefaultCredentialStore(
         clientId = "YOUR_SPOTIFY_CLIENT_ID",
         redirectUri = "YOUR_SPOTIFY_REDIRECT_URI",
