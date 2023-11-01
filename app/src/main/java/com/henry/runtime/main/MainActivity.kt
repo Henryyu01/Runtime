@@ -10,12 +10,13 @@ import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.adamratzman.spotify.auth.pkce.startSpotifyClientPkceLoginActivity
-import com.henry.runtime.ui.history.HistoryViewModel
-import com.henry.runtime.ui.home.HomeViewModel
+import com.example.compose.AppTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataType
 import com.henry.runtime.SpotifyLoginActivity
+import com.henry.runtime.ui.history.HistoryViewModel
+import com.henry.runtime.ui.home.HomeViewModel
 import com.henry.runtime.ui.main.MainScreen
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
@@ -44,13 +45,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MainScreen(
-                onSpotifyAuthentication = {
-                    initializeSpotify()
-                },
-                historyViewModel,
-                homeViewModel
-            )
+            AppTheme {
+                MainScreen(
+                    onSpotifyAuthentication = {
+                        initializeSpotify()
+                    },
+                    historyViewModel,
+                    homeViewModel
+                )
+            }
         }
     }
 
@@ -119,16 +122,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /**
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == AppCompatActivity.RESULT_OK && requestCode == Companion.PERMISSIONS_REQUEST_CODE) {
-            oAuthPermissions = true
-        } else {
-            // Show permission requirement dialogue
-        }
-    }
-    **/
 
     // Check that runtime permissions have been given
     private fun checkRuntimePermissions() {
