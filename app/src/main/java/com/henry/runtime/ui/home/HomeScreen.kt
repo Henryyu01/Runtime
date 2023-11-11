@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.henry.runtime.data.models.PlaylistModel
@@ -28,8 +30,9 @@ import com.henry.runtime.ui.components.SimpleButton
 
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel,
+    homeViewModel: HomeViewModel = hiltViewModel(),
     onSpotifyAuthentication: () -> Unit,
+    onNavigateToPlayerScreen: () -> Unit,
 ) {
     val playlists = homeViewModel.playlists.collectAsState().value
     val selectedPlaylist = homeViewModel.selectedPlaylist.collectAsState().value
@@ -54,11 +57,13 @@ fun HomeScreen(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
         }
+        Spacer(modifier = Modifier.height(16.dp))
         SimpleButton(
-            onClick = homeViewModel::onSessionStart,
+            onClick = onNavigateToPlayerScreen,
             text = "Start Session",
             modifier = Modifier.fillMaxWidth()
         )
+        Spacer(modifier = Modifier.height(16.dp))
         LazyColumn {
             playlists.forEach {
                 item(it.id) {
